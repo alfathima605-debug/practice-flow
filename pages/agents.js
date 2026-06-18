@@ -144,7 +144,7 @@ export default function AgentsPage() {
                           className="px-3 py-1 text-xs font-medium bg-indigo-100 text-indigo-800 rounded-full"
                         >
                           {skill}
-                        >
+                        </span>
                       ))}
                     </div>
                   </div>
