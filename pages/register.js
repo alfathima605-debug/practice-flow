@@ -23,6 +23,7 @@ export default function RegisterPage() {
     e.preventDefault();
     setSubmitting(true);
     setMessage("");
+    setMessageType("");
 
     // Basic validation
     if (!formData.name || !formData.email || !formData.password) {
@@ -46,17 +47,25 @@ export default function RegisterPage() {
       return;
     }
 
-    // Mock API call
+    // Call registration API
     try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      
-      // In a real app, you would send this data to your backend
-      console.log("Registering user:", formData);
-      
-      setMessage("Registration successful! Please check your email to verify your account.");
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      setMessage(data.message || "Registration successful! Please check your email to verify your account.");
       setMessageType("success");
-      
+
       // Clear form
       setFormData({
         name: "",
@@ -64,13 +73,13 @@ export default function RegisterPage() {
         password: "",
         confirmPassword: "",
       });
-      
+
       // Redirect to login after a short delay
       setTimeout(() => {
         router.push("/login");
       }, 2000);
     } catch (error) {
-      setMessage("Registration failed. Please try again.");
+      setMessage(error.message || "Registration failed. Please try again.");
       setMessageType("error");
       console.error(error);
     } finally {
@@ -82,11 +91,11 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
         <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
-        
+
         {message && (
           <div className={`mb-4 p-4 rounded-lg ${
-            messageType === "success" 
-              ? "bg-green-50 text-green-800" 
+            messageType === "success"
+              ? "bg-green-50 text-green-800"
               : "bg-red-50 text-red-800"
           }`}>
             {message}
